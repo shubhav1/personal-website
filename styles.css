@@ -344,6 +344,15 @@ ul {
   background: transparent;
 }
 
+#about {
+  min-height: 50svh;
+  padding-bottom: 5rem;
+}
+
+#about .text-box {
+  margin-bottom: 4rem;
+}
+
 .text-box-label {
   font-size: 0.95rem;
   font-weight: 500;

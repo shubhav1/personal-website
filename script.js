@@ -71,21 +71,23 @@ const setActive = (id) => {
   });
 };
 
-const observer = new IntersectionObserver(
-  (entries) => {
-    const visible = entries
-      .filter((entry) => entry.isIntersecting)
-      .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
+const updateActiveSection = () => {
+  if (!sections.length) return;
 
-    if (visible) setActive(visible.target.id);
-  },
-  {
-    rootMargin: "-20% 0px -55% 0px",
-    threshold: [0.15, 0.35, 0.55],
+  if (window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 12) {
+    setActive(sections[sections.length - 1].id);
+    return;
   }
-);
 
-sections.forEach((section) => observer.observe(section));
+  const spyLine = Math.min(140, window.innerHeight * 0.28);
+  let current = sections[0].id;
+  for (const section of sections) {
+    if (section.getBoundingClientRect().top <= spyLine) {
+      current = section.id;
+    }
+  }
+  setActive(current);
+};
 
 const gear = document.querySelector(".project-gear");
 const gearColumn = document.querySelector(".project-pin");
@@ -138,9 +140,14 @@ const onGearScroll = () => {
   gearFrame = requestAnimationFrame(() => {
     gearFrame = 0;
     updateProjectsScroll();
+    updateActiveSection();
   });
 };
 
 window.addEventListener("scroll", onGearScroll, { passive: true });
-window.addEventListener("resize", updateProjectsScroll);
+window.addEventListener("resize", () => {
+  updateProjectsScroll();
+  updateActiveSection();
+});
 updateProjectsScroll();
+updateActiveSection();
