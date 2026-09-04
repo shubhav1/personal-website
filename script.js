@@ -89,65 +89,71 @@ const updateActiveSection = () => {
   setActive(current);
 };
 
-const gear = document.querySelector(".project-gear");
-const gearColumn = document.querySelector(".project-pin");
-const gearGroup = document.querySelector(".project-sticky-group");
-const projectList = document.querySelector(".project-list");
-const projectScroller = document.querySelector(".project-scroller");
-const projectProgress = document.querySelector(".project-progress");
-const projectProgressFill = document.querySelector(".project-progress-fill");
-const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
-
-if (gearColumn && projectList) {
-  const projectCount = Math.max(1, projectList.children.length);
-  gearColumn.style.setProperty("--project-extra", String(projectCount - 1));
-  gearColumn.style.setProperty("--project-count", String(projectCount));
-}
-
-const updateProjectsScroll = () => {
-  if (!gearColumn || !gearGroup || !projectList || !projectScroller) return;
-
-  const travel = gearColumn.offsetHeight - gearGroup.offsetHeight;
-  const progress =
-    travel <= 0
-      ? 0
-      : Math.min(
-          1,
-          Math.max(0, (gearGroup.getBoundingClientRect().top - gearColumn.getBoundingClientRect().top) / travel)
-        );
-
-  if (gear && !reduceMotion.matches) {
-    gear.style.transform = `rotate(${progress * 360}deg)`;
-  }
-
-  const overflow = projectList.scrollHeight - projectScroller.clientHeight;
-  projectList.style.transform = `translateY(${-progress * Math.max(0, overflow)}px)`;
-
-  const projectCount = projectList.children.length;
-  const viewed = projectCount <= 1 ? 1 : 1 + progress * (projectCount - 1);
-  if (projectProgressFill) {
-    projectProgressFill.style.transform = `translateY(${progress * Math.max(0, projectCount - 1) * 100}%)`;
-  }
-  if (projectProgress) {
-    projectProgress.setAttribute("aria-valuenow", String(Math.round(viewed)));
-    projectProgress.setAttribute("aria-valuemax", String(projectCount));
-  }
-};
-
-let gearFrame = 0;
-const onGearScroll = () => {
-  if (gearFrame) return;
-  gearFrame = requestAnimationFrame(() => {
-    gearFrame = 0;
-    updateProjectsScroll();
-    updateActiveSection();
-  });
-};
-
-window.addEventListener("scroll", onGearScroll, { passive: true });
-window.addEventListener("resize", () => {
-  updateProjectsScroll();
-  updateActiveSection();
-});
-updateProjectsScroll();
+let spyFrame = 0;
+window.addEventListener(
+  "scroll",
+  () => {
+    if (spyFrame) return;
+    spyFrame = requestAnimationFrame(() => {
+      spyFrame = 0;
+      updateActiveSection();
+    });
+  },
+  { passive: true }
+);
+window.addEventListener("resize", updateActiveSection);
 updateActiveSection();
+
+window.addEventListener(
+  "wheel",
+  (event) => {
+    if (event.deltaY >= 0) return;
+    if (window.scrollY > 0) return;
+    event.preventDefault();
+  },
+  { passive: false }
+);
+
+const expCards = [...document.querySelectorAll(".exp-card")];
+const expModal = document.querySelector("#experience-modal");
+const expBackdrop = document.querySelector("#experience-modal-backdrop");
+const expModalClose = document.querySelector(".exp-modal-close");
+const expModalCompany = document.querySelector("#exp-modal-company");
+const expModalRole = document.querySelector(".exp-modal-role");
+const expModalBody = document.querySelector(".exp-modal-body");
+
+let lastExpTrigger = null;
+
+const openExpModal = (card) => {
+  const templateId = card.getAttribute("data-details");
+  const template = document.querySelector(`#${templateId}`);
+  if (!template) return;
+
+  expModalCompany.textContent = card.querySelector(".exp-company").textContent;
+  expModalRole.textContent = card.querySelector(".exp-role").textContent;
+  expModalBody.replaceChildren(template.content.cloneNode(true));
+
+  lastExpTrigger = card;
+  expModal.classList.add("is-open");
+  expBackdrop.classList.add("is-open");
+  expModalClose.focus();
+};
+
+const closeExpModal = () => {
+  expModal.classList.remove("is-open");
+  expBackdrop.classList.remove("is-open");
+  if (lastExpTrigger) lastExpTrigger.focus();
+};
+
+expCards.forEach((card) => {
+  card.addEventListener("click", () => openExpModal(card));
+});
+
+expModalClose.addEventListener("click", closeExpModal);
+expBackdrop.addEventListener("click", closeExpModal);
+
+document.addEventListener("keydown", (event) => {
+  if (event.key === "Escape" && expModal.classList.contains("is-open")) {
+    closeExpModal();
+  }
+});

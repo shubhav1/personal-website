@@ -15,7 +15,7 @@
       rel="stylesheet"
     />
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
-    <link rel="stylesheet" href="styles.css?v=45" />
+    <link rel="stylesheet" href="styles.css?v=57" />
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='10' fill='%235b9cff'/><text x='16' y='22' text-anchor='middle' font-family='sans-serif' font-size='13' font-weight='700' fill='%23ffffff'>SV</text></svg>" />
   </head>
   <body>
@@ -108,64 +108,68 @@
       </section>
 
       <section class="section" id="projects">
-        <div class="project-pin">
-          <div class="project-sticky-group">
-            <div class="section-head">
-              <span class="section-index">01</span>
-              <h2>Projects</h2>
-            </div>
-            <div class="project-shell">
-              <div class="project-visual">
-                <svg class="project-gear" viewBox="0 0 200 200" aria-hidden="true">
-                  <defs>
-                    <mask id="gear-hole">
-                      <rect width="200" height="200" fill="white" />
-                      <circle cx="100" cy="100" r="28" fill="black" />
-                    </mask>
-                  </defs>
-                  <g fill="currentColor" mask="url(#gear-hole)">
-                    <rect x="84" y="6" width="32" height="40" rx="10" />
-                    <rect x="84" y="6" width="32" height="40" rx="10" transform="rotate(45 100 100)" />
-                    <rect x="84" y="6" width="32" height="40" rx="10" transform="rotate(90 100 100)" />
-                    <rect x="84" y="6" width="32" height="40" rx="10" transform="rotate(135 100 100)" />
-                    <rect x="84" y="6" width="32" height="40" rx="10" transform="rotate(180 100 100)" />
-                    <rect x="84" y="6" width="32" height="40" rx="10" transform="rotate(225 100 100)" />
-                    <rect x="84" y="6" width="32" height="40" rx="10" transform="rotate(270 100 100)" />
-                    <rect x="84" y="6" width="32" height="40" rx="10" transform="rotate(315 100 100)" />
-                    <circle cx="100" cy="100" r="62" />
-                  </g>
-                </svg>
-              </div>
-              <div class="project-scroller">
-                <div class="project-list">
-                  <div class="text-box" aria-label="Project 1">
-                    <span class="text-box-label">text</span>
-                  </div>
-                  <div class="text-box" aria-label="Project 2">
-                    <span class="text-box-label">text</span>
-                  </div>
-                  <div class="text-box" aria-label="Project 3">
-                    <span class="text-box-label">text</span>
-                  </div>
-                </div>
-              </div>
-              <div
-                class="project-progress"
-                role="progressbar"
-                aria-label="Projects viewed"
-                aria-valuemin="1"
-                aria-valuemax="3"
-                aria-valuenow="1"
-              >
-                <div class="project-progress-track">
-                  <div class="project-progress-fill"></div>
-                </div>
-              </div>
-            </div>
-            <a class="scroll-hint project-skip" href="#experience" aria-label="Scroll to work experience">
-              <span>Scroll to next section</span>
-              <span class="scroll-hint-line" aria-hidden="true"></span>
-            </a>
+        <div class="section-head">
+          <span class="section-index">01</span>
+          <h2>Projects</h2>
+        </div>
+        <div class="project-list">
+          <div class="text-box project-card" aria-label="Project 1">
+            <span class="project-title">flash-attention-2</span>
+            <span class="project-tagline">FlashAttention-2, written in Triton from scratch</span>
+            <p class="project-desc">
+              Custom Triton kernels for FlashAttention-2 forward and backward passes, wrapped as
+              a PyTorch autograd function and autotuned per sequence length, head dim, and
+              causality, then verified for correctness against a naive scaled dot-product
+              attention implementation written from scratch. Wired it into a transformer's
+              attention layer and built out a full benchmarking
+              suite on an A100 — CUDA memory snapshots tracking peak usage across context lengths,
+              and NSight Systems traces to see which kernels actually dominate a training step.
+            </p>
+            <ul class="project-tags">
+              <li>Triton</li>
+              <li>memory profiling</li>
+              <li>NSight profiling</li>
+            </ul>
+          </div>
+          <div class="text-box project-card" aria-label="Project 2">
+            <span class="project-title">my-gpt</span>
+            <span class="project-tagline">A decoder-only transformer, rebuilt one modern improvement at a time</span>
+            <p class="project-desc">
+              Started as a from-scratch GPT following Karpathy's <em>Zero to Hero</em> series,
+              then turned into a testbed for modern transformer changes — BPE tokenization,
+              RMSNorm, SwiGLU, RoPE — each isolated in its own controlled ablation study on Tiny
+              Shakespeare. Diagnosed a stubborn overfitting problem by working out the model's
+              tokens-per-parameter ratio against Chinchilla scaling laws, and traced an RMSNorm
+              slowdown that contradicted the literature back to a missing <code>torch.compile</code>
+              call, which turned into its own follow-up investigation.
+            </p>
+            <ul class="project-tags">
+              <li>PyTorch</li>
+              <li>8 ablation studies</li>
+              <li>best val bpb 2.12</li>
+            </ul>
+          </div>
+          <div class="text-box project-card" aria-label="Project 3">
+            <span class="project-title">mlp-from-scratch</span>
+            <span class="project-tagline">A word-level language model, built entirely in NumPy</span>
+            <p class="project-desc">
+              Inspired by Karpathy's <em>makemore</em>: a hand-rolled embedding table, linear
+              layers, BatchNorm, and softmax cross-entropy, with every forward and backward pass
+              derived and implemented from scratch — no autograd. Trained and compared four
+              architectures on Tiny Shakespeare, methodically debugging tanh saturation, BatchNorm
+              EMA drift, and a stop-token bug by tracing distributions and running stats
+              layer-by-layer rather than guessing at fixes.
+            </p>
+            <ul class="project-tags">
+              <li>NumPy</li>
+              <li>from scratch</li>
+              <li>test loss 6.28</li>
+            </ul>
+          </div>
+          <div class="text-box project-card project-card-placeholder" aria-label="Project 4">
+            <span class="project-title">my-inference-engine</span>
+            <span class="project-tagline">A custom LLM inference engine</span>
+            <p class="project-desc">Coming soon.</p>
           </div>
         </div>
       </section>
@@ -181,39 +185,122 @@
               <span class="timeline-notch"></span>
             </div>
             <span class="timeline-stem"></span>
-            <div class="text-box" aria-label="Experience 1">
-              <span class="text-box-label">text</span>
-            </div>
+            <button
+              class="text-box exp-card"
+              type="button"
+              aria-haspopup="dialog"
+              aria-controls="experience-modal"
+              data-details="exp-details-4"
+            >
+              <span class="exp-company">USC Annenberg School Operations</span>
+              <span class="exp-role">Finance and Data Analyst</span>
+              <span class="exp-dates">March 2025 – May 2026</span>
+              <span class="exp-hint">View details</span>
+            </button>
+            <template id="exp-details-4">
+              <span class="exp-meta">March 2025 – May 2026 · Los Angeles, CA</span>
+              <ul class="exp-bullets">
+                <li>Built a Power BI dashboard aggregating $6M+ in historical budget data across various sources to monitor burn rate and cash runway</li>
+                <li>Consolidated 30+ financial reports into a centralized sheet, enabling executives to identify and cut spending by ~10%</li>
+                <li>Analyzed capital and operational expenditures to develop FY2027 budgets, informing allocation decisions across departments</li>
+              </ul>
+            </template>
           </li>
           <li class="timeline-item">
             <div class="timeline-marker">
               <span class="timeline-notch"></span>
             </div>
             <span class="timeline-stem"></span>
-            <div class="text-box" aria-label="Experience 2">
-              <span class="text-box-label">text</span>
-            </div>
+            <button
+              class="text-box exp-card"
+              type="button"
+              aria-haspopup="dialog"
+              aria-controls="experience-modal"
+              data-details="exp-details-3"
+            >
+              <span class="exp-company">Automus Inc.</span>
+              <span class="exp-role">AI Engineer Intern</span>
+              <span class="exp-dates">June 2025 – August 2025</span>
+              <span class="exp-hint">View details</span>
+            </button>
+            <template id="exp-details-3">
+              <span class="exp-meta">June 2025 – August 2025 · Los Angeles, CA</span>
+              <ul class="exp-bullets">
+                <li>Developed and shipped an AI-powered platform (React, Next.js, Flask, AWS S3/Aurora/Bedrock) that processes meeting transcripts using retrieval-augmented generation to power a chatbot and generate client-ready design documents</li>
+                <li>Designed backend data flows and integrated external APIs to support 200+ employees, reducing document prep time by 3+ hours</li>
+                <li>Cleaned and migrated client data to Oracle Fusion, trained client end users through workshops, and accelerated go-live timeline</li>
+              </ul>
+            </template>
           </li>
           <li class="timeline-item">
             <div class="timeline-marker">
               <span class="timeline-notch"></span>
             </div>
             <span class="timeline-stem"></span>
-            <div class="text-box" aria-label="Experience 3">
-              <span class="text-box-label">text</span>
-            </div>
+            <button
+              class="text-box exp-card"
+              type="button"
+              aria-haspopup="dialog"
+              aria-controls="experience-modal"
+              data-details="exp-details-2"
+            >
+              <span class="exp-company">Climate Resolve (NGO)</span>
+              <span class="exp-role">Software Developer</span>
+              <span class="exp-dates">September 2025 – May 2026</span>
+              <span class="exp-hint">View details</span>
+            </button>
+            <template id="exp-details-2">
+              <span class="exp-meta">September 2025 – May 2026 · Los Angeles, CA</span>
+              <ul class="exp-bullets">
+                <li>Building a comprehensive internal dashboard using Tailwind, React, and Firebase to consolidate employee and project management</li>
+                <li>Implementing real-time tracking, saving $300 monthly and improving efficiency by consolidating three software tools into one</li>
+              </ul>
+            </template>
           </li>
           <li class="timeline-item">
             <div class="timeline-marker">
               <span class="timeline-notch"></span>
             </div>
             <span class="timeline-stem"></span>
-            <div class="text-box" aria-label="Experience 4">
-              <span class="text-box-label">text</span>
-            </div>
+            <button
+              class="text-box exp-card"
+              type="button"
+              aria-haspopup="dialog"
+              aria-controls="experience-modal"
+              data-details="exp-details-1"
+            >
+              <span class="exp-company">McKinsey & Company</span>
+              <span class="exp-role">Sophomore Summer Business Analyst</span>
+              <span class="exp-dates">June 2026 – August 2026</span>
+              <span class="exp-hint">View details</span>
+            </button>
+            <template id="exp-details-1">
+              <span class="exp-meta">June 2026 – August 2026 · Los Angeles, CA</span>
+              <ul class="exp-bullets">
+                <li>Developed a hyperscaler GTM strategy by analyzing data center power infrastructure, battery deployment strategies, and projected battery energy storage demand for a large energy client</li>
+                <li>Evaluated technical and cost trade-offs across battery energy storage technologies to recommend product development priorities</li>
+                <li>Co-designed a Minimum Viable Reference Architecture for a statewide health and human services modernization initiative, evolving a department-specific data model into a reusable framework</li>
+              </ul>
+            </template>
           </li>
         </ol>
       </section>
+
+      <div class="exp-modal-backdrop" id="experience-modal-backdrop"></div>
+      <div
+        class="exp-modal"
+        id="experience-modal"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="exp-modal-company"
+      >
+        <button class="exp-modal-close" type="button" aria-label="Close">×</button>
+        <div class="exp-modal-header">
+          <span class="exp-modal-company" id="exp-modal-company"></span>
+          <span class="exp-modal-role"></span>
+        </div>
+        <div class="exp-modal-body"></div>
+      </div>
 
       <section class="section" id="writing">
         <div class="section-head">
@@ -237,7 +324,7 @@
             middle school, sewing my dream top with limited fabric and even fewer sewing skills,
             or consulting for the biggest problems at the biggest companies at McKinsey. <br><br>
 
-            So, it comes to no surprise that I'm extremely interested in machine learning. I 
+            Naturally, this led me to machine learning. I 
             spend most of my time learning about, coding, and implementing machine learning solutions,
             from studying the original transformer paper to building my own models. I'm working towards 
             a future where I can meaningfully contribute to the field of ML research and development. <br><br>
@@ -256,6 +343,6 @@
       <p>Shubha Vajragiri</p>
     </footer>
 
-    <script src="script.js?v=45"></script>
+    <script src="script.js?v=48"></script>
   </body>
 </html>

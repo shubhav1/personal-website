@@ -27,12 +27,13 @@
 html {
   scroll-behavior: smooth;
   scroll-padding-top: calc(var(--nav-h) + 0.75rem);
-  background: #ffffff;
+  background: #d7e8ff;
+  overscroll-behavior: none;
 }
 
 body {
   font-family: Nunito, system-ui, sans-serif;
-  background-color: #ffffff;
+  background-color: #d7e8ff;
   background-image: linear-gradient(
     168deg,
     #d7e8ff 0%,
@@ -44,6 +45,7 @@ body {
   color: var(--ink);
   line-height: 1.5;
   min-height: 100vh;
+  overscroll-behavior: none;
   -webkit-font-smoothing: antialiased;
 }
 
@@ -415,111 +417,256 @@ ul {
   box-shadow: none;
 }
 
-.project-pin {
-  --project-card-h: 36rem;
-  --project-gap: 1rem;
-  --project-inset: 2rem;
-  --project-extra: 2;
-  width: min(100%, var(--max));
-  margin: 0 auto;
+.timeline-item .exp-card {
+  flex: 1 1 auto;
+  min-height: 7rem;
 }
 
-.project-pin::after {
-  content: "";
-  display: block;
-  height: calc(var(--project-extra) * (var(--project-card-h) + var(--project-gap)));
-}
-
-.project-sticky-group {
-  position: sticky;
-  top: calc(var(--nav-h) + 1.25rem);
-  z-index: 2;
-}
-
-.project-sticky-group .section-head {
-  width: 100%;
-  margin-bottom: 1.6rem;
-  background: transparent;
-}
-
-.project-skip {
-  position: static;
-  left: auto;
-  transform: none;
-  margin: 1.35rem auto 0;
-}
-
-.project-shell {
+.exp-card {
   display: flex;
-  align-items: stretch;
-  height: var(--project-card-h);
-  overflow: hidden;
-  padding: var(--project-inset) 1.25rem;
-  border: 0;
-  border-radius: var(--radius);
-  background: transparent;
-  box-shadow: none;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 0.3rem;
+  text-align: left;
+  font-family: inherit;
+  cursor: pointer;
+  transition: transform 0.2s var(--ease), border-color 0.2s var(--ease),
+    box-shadow 0.2s var(--ease);
 }
 
-.project-visual {
-  flex: 0 0 40%;
-  display: grid;
-  place-items: center;
+.exp-card:hover,
+.exp-card:focus-visible {
+  transform: translateY(-3px);
+  border-color: var(--accent);
+  box-shadow: 0 14px 30px rgba(91, 156, 255, 0.16);
+  outline: none;
 }
 
-.project-gear {
-  width: min(92%, 28rem);
-  color: var(--accent);
-  transform-box: fill-box;
-  transform-origin: center;
-  will-change: transform;
-}
-
-.project-scroller {
-  flex: 1;
-  min-width: 0;
-  min-height: 0;
-  overflow: hidden;
-}
-
-.project-progress {
-  flex: 0 0 auto;
-  align-self: stretch;
-  display: flex;
-  margin-left: 0.9rem;
-}
-
-.project-progress-track {
-  width: 2px;
-  align-self: stretch;
-  border-radius: 999px;
-  background: var(--line-strong);
-  overflow: hidden;
-}
-
-.project-progress-fill {
-  width: 100%;
-  height: calc(100% / var(--project-count, 3));
-  border-radius: inherit;
-  background: var(--accent);
+.exp-card:hover .exp-hint,
+.exp-card:focus-visible .exp-hint {
+  opacity: 1;
   transform: translateY(0);
 }
 
-.project-list {
+.exp-company {
+  font-family: Fredoka, Nunito, system-ui, sans-serif;
+  font-size: 1.02rem;
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.exp-role {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--muted);
+}
+
+.exp-dates {
+  font-size: 0.76rem;
+  font-weight: 500;
+  color: var(--muted);
+  opacity: 0.8;
+}
+
+.exp-hint {
+  margin-top: 0.5rem;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  color: var(--accent);
+  opacity: 0;
+  transform: translateY(2px);
+  transition: opacity 0.2s var(--ease), transform 0.2s var(--ease);
+}
+
+.exp-hint::after {
+  content: " →";
+}
+
+.exp-meta {
+  display: block;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--muted);
+}
+
+.exp-bullets {
   display: flex;
   flex-direction: column;
-  gap: var(--project-gap);
-  padding-left: 0.75rem;
-  will-change: transform;
+  gap: 0.6rem;
+  padding-left: 1.1rem;
+  margin-top: 1rem;
+}
+
+.exp-bullets li {
+  font-size: 0.9rem;
+  line-height: 1.5;
+  color: var(--muted);
+}
+
+/* ——— Experience modal ——— */
+
+.exp-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 3;
+  background: rgba(44, 51, 64, 0.35);
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.2s var(--ease), visibility 0.2s var(--ease);
+}
+
+.exp-modal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  z-index: 4;
+  width: min(32rem, calc(100vw - 2 * var(--pad)));
+  max-height: min(34rem, calc(100vh - 2 * var(--pad)));
+  overflow-y: auto;
+  padding: 2rem;
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  box-shadow: 0 24px 60px rgba(44, 51, 64, 0.22);
+  opacity: 0;
+  visibility: hidden;
+  transform: translate(-50%, -48%) scale(0.97);
+  transition: opacity 0.2s var(--ease), visibility 0.2s var(--ease),
+    transform 0.2s var(--ease);
+}
+
+.exp-modal.is-open,
+.exp-modal-backdrop.is-open {
+  opacity: 1;
+  visibility: visible;
+}
+
+.exp-modal.is-open {
+  transform: translate(-50%, -50%) scale(1);
+}
+
+.exp-modal-close {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  width: 2rem;
+  height: 2rem;
+  border: 0;
+  border-radius: 50%;
+  background: var(--wash);
+  color: var(--muted);
+  font-size: 1.3rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.exp-modal-close:hover {
+  color: var(--ink);
+}
+
+.exp-modal-header {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  padding-right: 2rem;
+}
+
+.exp-modal-company {
+  font-family: Fredoka, Nunito, system-ui, sans-serif;
+  font-size: 1.3rem;
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.exp-modal-role {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--accent);
+}
+
+.exp-modal-body .exp-meta {
+  margin-top: 0.35rem;
+}
+
+.project-list {
+  width: min(100%, var(--max));
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.15rem;
 }
 
 .project-list .text-box {
   width: 100%;
-  height: calc(var(--project-card-h) - 4 * var(--project-inset));
-  min-height: calc(var(--project-card-h) - 3 * var(--project-inset));
+  min-height: 16rem;
   margin: 0;
-  flex-shrink: 0;
+}
+
+.project-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.project-title {
+  font-family: Fredoka, Nunito, system-ui, sans-serif;
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.project-tagline {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--muted);
+}
+
+.project-desc {
+  font-size: 0.85rem;
+  line-height: 1.55;
+  color: var(--muted);
+  margin-top: 0.35rem;
+}
+
+.project-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-top: auto;
+  padding-top: 1rem;
+  list-style: none;
+}
+
+.project-card-placeholder {
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  border-style: dashed;
+  border-color: var(--line-strong);
+  background: transparent;
   box-shadow: none;
+}
+
+.project-card-placeholder .project-title,
+.project-card-placeholder .project-tagline {
+  color: var(--muted);
+}
+
+.project-card-placeholder .project-desc {
+  font-style: italic;
+  opacity: 0.75;
+}
+
+.project-tags li {
+  padding: 0.25rem 0.65rem;
+  border-radius: 999px;
+  background: var(--accent-soft);
+  color: var(--accent);
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.01em;
 }
 
 /* ——— Contact popover ——— */
@@ -643,6 +790,10 @@ ul {
     overflow-x: auto;
     grid-template-columns: repeat(4, minmax(9.5rem, 1fr));
   }
+
+  .project-list {
+    grid-template-columns: 1fr;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -659,9 +810,5 @@ ul {
   .nav-menu,
   .nav-mark {
     transition: none;
-  }
-
-  .project-gear {
-    will-change: auto;
   }
 }
