@@ -1,0 +1,17 @@
+---
+import { render } from 'astro:content';
+import Entry from '../../layouts/Entry.astro';
+import { formatDate, getPosts } from '../../lib/content';
+
+export async function getStaticPaths() {
+	const posts = await getPosts();
+	return posts.map((entry) => ({ params: { id: entry.id }, props: { entry } }));
+}
+
+const { entry } = Astro.props;
+const { Content } = await render(entry);
+---
+
+<Entry title={entry.data.title} meta={formatDate(entry.data.date)} summary={entry.data.summary}>
+	<Content />
+</Entry>

@@ -1,0 +1,83 @@
+---
+import ProjectVideo from '../../components/ProjectVideo.astro';
+import Base from '../../layouts/Base.astro';
+import { getProjects } from '../../lib/content';
+
+const projects = await getProjects();
+---
+
+<Base title="Projects" wide>
+	<p class="lede">Here are some of the things I've built --</p>
+
+	<section>
+		<ul class="rows">
+			{projects.map((p) => (
+				<li id={p.id}>
+					<div class="entry">
+						<div>
+							<h3>
+								{p.data.title}
+								{p.data.inProgress && <span class="status">in progress</span>}
+							</h3>
+							<p>{p.data.description ?? p.data.summary}</p>
+						</div>
+						<div class="thumb">
+							<ProjectVideo src={p.data.video} poster={p.data.poster} image={p.data.image} label={p.data.title} />
+						</div>
+					</div>
+				</li>
+			))}
+		</ul>
+		<p class="more-to-come">more to come --</p>
+	</section>
+</Base>
+
+<style>
+	/* No date column here, so entries take the full row. Home page thumbnails link to
+	   /projects#<id>; the scroll margin keeps the entry clear of the sticky masthead. */
+	.rows li {
+		display: block;
+		padding: 1rem 0 1.5rem;
+		scroll-margin-top: var(--content-top);
+	}
+
+	.more-to-come {
+		margin-top: 1.5rem;
+		color: var(--muted);
+	}
+
+	h3 {
+		font-size: 1rem;
+		font-weight: 500;
+		margin: 0 0 0.35rem;
+	}
+
+	.entry p {
+		margin: 0;
+	}
+
+	.status {
+		margin-left: 0.6rem;
+		font-family: var(--secondary);
+		font-size: var(--secondary-size);
+		font-weight: 400;
+		color: var(--muted);
+	}
+
+	.thumb {
+		margin-top: 0.75rem;
+	}
+
+	/* Wide screens: description on the left, video on the right half. */
+	@media (min-width: 70rem) {
+		.entry {
+			display: grid;
+			grid-template-columns: 1fr 1fr;
+			column-gap: 2rem;
+		}
+
+		.thumb {
+			margin-top: 0;
+		}
+	}
+</style>

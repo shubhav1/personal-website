@@ -1,0 +1,350 @@
+---
+interface Props {
+	title?: string;
+	// Let the content span the aside column too, matching the home page's full width.
+	wide?: boolean;
+}
+
+const { title, wide = false } = Astro.props;
+const pageTitle = title ? `${title} — Shubha Vajragiri` : 'Shubha Vajragiri';
+const path = Astro.url.pathname;
+const hasAside = Astro.slots.has('aside');
+---
+
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+		<link rel="preconnect" href="https://fonts.googleapis.com" />
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+		<link
+			href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,400;0,500;1,400&family=Fira+Sans+Condensed:wght@400;500&display=swap"
+			rel="stylesheet"
+		/>
+		<title>{pageTitle}</title>
+	</head>
+	<body>
+		<div class:list={['page', { 'has-aside': hasAside, wide }]}>
+			<header class="masthead">
+				<nav>
+					<a href="/" aria-current={path === '/' ? 'page' : undefined}>about me</a>
+					<a href="/projects" aria-current={path.startsWith('/projects') ? 'page' : undefined}>projects</a>
+					<a href="/writing" aria-current={path.startsWith('/writing') ? 'page' : undefined}>writing</a>
+				</nav>
+			</header>
+
+			<main>
+				<slot />
+			</main>
+
+			{hasAside && (
+				<aside>
+					<slot name="aside" />
+				</aside>
+			)}
+		</div>
+
+		<footer>
+			Shubha Vajragiri, 2026<br />
+			shubha.vajragiri@gmail.com
+		</footer>
+	</body>
+</html>
+
+<style is:global>
+	:root {
+		--paper: #ffffff;
+		--ink: #1f1d1a;
+		--muted: #77726b;
+		--rule: #e8e5e0;
+		--accent: #2357d6;
+		--glint: #a9c8ff;
+
+		--sans: 'Poppins', system-ui, sans-serif;
+		--secondary: 'Fira Sans Condensed', system-ui, sans-serif;
+		--secondary-size: 0.82rem;
+		--code: ui-monospace, 'SF Mono', Menlo, monospace;
+	}
+
+	@media (prefers-color-scheme: dark) {
+		:root {
+			--paper: #1a1917;
+			--ink: #e9e4d9;
+			--muted: #8f887c;
+			--rule: #34312c;
+			--accent: #7ba5ff;
+			--glint: #eaf1ff;
+		}
+	}
+
+	* {
+		box-sizing: border-box;
+	}
+
+	html {
+		/* Reserve the scrollbar's space so short and long pages don't shift sideways. */
+		scrollbar-gutter: stable;
+		background: var(--paper);
+		color: var(--ink);
+		font-family: var(--sans);
+		font-size: 18px;
+		line-height: 1.6;
+		-webkit-font-smoothing: antialiased;
+	}
+
+	/* The page fills at least the window (see .page's flex below), so on short pages
+	   the footer sits at the bottom of the screen instead of right under the content. */
+	body {
+		margin: 0;
+		min-height: 100vh;
+		display: flex;
+		flex-direction: column;
+	}
+
+	a {
+		color: inherit;
+		text-decoration: underline;
+		text-decoration-color: var(--accent);
+		text-decoration-thickness: 1px;
+		text-underline-offset: 0.2em;
+	}
+
+	/* Hovered links turn blue with diagonal bands of light sweeping across the text.
+	   The bands are a repeating gradient tiled along the text. Its period is the tile
+	   width × sin(125deg), so the stripes line up across tile edges, and sliding one
+	   tile per cycle loops seamlessly. Links that wrap media (.block-link) put the
+	   effect on their .sheen text instead. */
+	a:not(.block-link):hover,
+	.block-link:hover .sheen {
+		--glint-tile: 4em;
+		--glint-period: calc(var(--glint-tile) * 0.8192);
+		color: transparent;
+		background: repeating-linear-gradient(
+				125deg,
+				var(--accent) 0,
+				var(--accent) calc(var(--glint-period) * 0.35),
+				var(--glint) calc(var(--glint-period) * 0.5),
+				var(--accent) calc(var(--glint-period) * 0.65),
+				var(--accent) var(--glint-period)
+			)
+			0 0 / var(--glint-tile) 100% repeat-x;
+		-webkit-background-clip: text;
+		background-clip: text;
+		animation: glint 0.9s linear infinite;
+	}
+
+	@keyframes glint {
+		from {
+			background-position-x: 0;
+		}
+		to {
+			background-position-x: var(--glint-tile);
+		}
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		a:not(.block-link):hover,
+		.block-link:hover .sheen {
+			animation: none;
+			background: none;
+			color: var(--accent);
+		}
+	}
+
+	/* The page's top offset lives on the masthead, not the page, so the sticky
+	   masthead's text sits in the same spot whether or not you've scrolled.
+	   --head-h is the masthead's full height; --content-top is where the page's
+	   content (and the home page photos) start, just below it. */
+	.page {
+		--top: 3rem;
+		--head-h: calc(var(--top) + 2.25rem);
+		--content-top: calc(var(--head-h) + 1.5rem);
+		flex: 1;
+		max-width: 34rem;
+		margin: 0 1.25rem;
+		padding: 0 0 4rem;
+	}
+
+	@media (min-width: 52rem) {
+		.page {
+			--top: 5rem;
+			margin: 0 0 0 18vw;
+			padding: 0 1.25rem 4rem 0;
+		}
+	}
+
+	/* Narrow screens: the aside (home page photos) follows the text. */
+	.page.has-aside > aside {
+		margin-top: 3rem;
+	}
+
+	/* Every page uses the same centered two-column grid once there's room for the
+	   text, its hanging labels, and the aside — so the masthead and text column sit
+	   in the same spot across pages. Pages without an aside leave the column empty. */
+	@media (min-width: 70rem) {
+		.page {
+			max-width: none;
+			margin: 0;
+			padding: 0 2rem 4rem 7rem;
+			display: grid;
+			grid-template-columns: 34rem minmax(14rem, 20rem);
+			grid-template-areas:
+				'head  aside'
+				'main  aside';
+			column-gap: clamp(3rem, 7vw, 7rem);
+			justify-content: center;
+			/* Keep rows packed at the top when the page is stretched to fill the window. */
+			align-content: start;
+		}
+
+		.page > .masthead {
+			grid-area: head;
+		}
+
+		.page > main {
+			grid-area: main;
+		}
+
+		.page.wide > main {
+			grid-column: 1 / -1;
+		}
+
+		/* Starts level with the first line of content, below the masthead, and sticks
+		   at that same offset so it never shifts on the first scroll. */
+		.page.has-aside > aside {
+			grid-area: aside;
+			align-self: start;
+			position: sticky;
+			top: var(--content-top);
+			margin-top: var(--content-top);
+		}
+	}
+
+	.masthead {
+		position: sticky;
+		top: 0;
+		z-index: 1;
+		display: flex;
+		gap: 1.5rem;
+		font-family: var(--secondary);
+		font-size: var(--secondary-size);
+		letter-spacing: 0.04em;
+		color: var(--muted);
+		height: var(--head-h);
+		padding-top: var(--top);
+		margin: 0 0 1.5rem;
+	}
+
+	/* Backdrop that content scrolls under, bled out to the full width of the window.
+	   The spread shadow does the bleeding; clip-path keeps it from spilling above or
+	   below the masthead. Neither causes horizontal scrolling. */
+	.masthead::before {
+		content: '';
+		position: absolute;
+		z-index: -1;
+		inset: 0;
+		background: var(--paper);
+		box-shadow: 0 0 0 100vmax var(--paper);
+		clip-path: inset(0 -100vmax);
+		pointer-events: none;
+	}
+
+	.masthead a {
+		text-decoration: none;
+	}
+
+	.masthead nav {
+		display: flex;
+		gap: 1rem;
+	}
+
+	.masthead nav a[aria-current='page'] {
+		text-decoration: underline;
+		text-decoration-color: var(--accent);
+	}
+
+	.masthead nav a[aria-current='page']:not(:hover) {
+		color: var(--ink);
+	}
+
+	.lede {
+		font-size: 1.55rem;
+		line-height: 1.35;
+		margin: 0 0 3.5rem;
+	}
+
+	section {
+		position: relative;
+		margin-bottom: 2.75rem;
+	}
+
+	section p {
+		margin: 0 0 1rem;
+	}
+
+	/* Section labels hang in the left margin on wide screens. */
+	.label {
+		font-family: var(--secondary);
+		font-weight: 400;
+		font-size: var(--secondary-size);
+		color: var(--muted);
+		margin: 0 0 0.5rem;
+	}
+
+	@media (min-width: 52rem) {
+		.label {
+			position: absolute;
+			right: calc(100% + 2rem);
+			top: 0.35rem;
+			margin: 0;
+			white-space: nowrap;
+		}
+	}
+
+	.rows {
+		list-style: none;
+		padding: 0;
+		margin: 0;
+	}
+
+	.rows li {
+		display: grid;
+		grid-template-columns: 3.5rem 1fr;
+		padding: 0.35rem 0;
+		border-top: 1px solid var(--rule);
+	}
+
+	.rows li:last-child {
+		border-bottom: 1px solid var(--rule);
+	}
+
+	.rows.dated li {
+		grid-template-columns: 6.5rem 1fr;
+	}
+
+	.year {
+		font-family: var(--secondary);
+		font-size: var(--secondary-size);
+		color: var(--muted);
+		padding-top: 0.3rem;
+	}
+
+	.more {
+		display: inline-block;
+		margin-top: 0.75rem;
+		font-family: var(--secondary);
+		font-size: var(--secondary-size);
+		color: var(--muted);
+	}
+
+	/* Sits outside the page grid, so it's below everything (including the home page
+	   photos) and centered on the window rather than the text column. */
+	footer {
+		padding: 2rem 1.25rem 3rem;
+		text-align: center;
+		font-family: var(--secondary);
+		font-size: calc(var(--secondary-size) * 0.95);
+		color: var(--muted);
+	}
+</style>

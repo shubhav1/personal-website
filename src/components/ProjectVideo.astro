@@ -1,0 +1,72 @@
+---
+interface Props {
+	src?: string;
+	poster?: string;
+	// A still thumbnail, used when there's no video.
+	image?: string;
+	label: string;
+}
+
+const { src, poster, image, label } = Astro.props;
+---
+
+{src ? (
+	<video class="project-video" src={src} poster={poster} muted loop playsinline preload="metadata" aria-label={label} />
+) : image ? (
+	<img class="project-video" src={image} alt={label} loading="lazy" decoding="async" />
+) : (
+	<div class="project-video placeholder" aria-hidden="true">[video]</div>
+)}
+
+<style>
+	.project-video {
+		display: block;
+		width: 100%;
+		aspect-ratio: 16 / 10;
+		object-fit: cover;
+		background: var(--rule);
+		border-radius: 4px;
+	}
+
+	/* Real thumbnails float slightly off the page; placeholders stay flat. */
+	img.project-video,
+	video.project-video {
+		box-shadow:
+			0 1px 2px rgb(0 0 0 / 0.06),
+			0 6px 18px rgb(0 0 0 / 0.1);
+	}
+
+	@media (prefers-color-scheme: dark) {
+		img.project-video,
+		video.project-video {
+			box-shadow:
+				0 1px 2px rgb(0 0 0 / 0.3),
+				0 6px 18px rgb(0 0 0 / 0.45);
+		}
+	}
+
+	.placeholder {
+		display: grid;
+		place-items: center;
+		font-family: var(--secondary);
+		font-size: var(--secondary-size);
+		color: var(--muted);
+	}
+</style>
+
+<script>
+	// Play videos only while they're on screen, and never for reduced-motion users.
+	const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+	if (!reduceMotion) {
+		const observer = new IntersectionObserver((entries) => {
+			for (const { target, isIntersecting } of entries) {
+				const video = target as HTMLVideoElement;
+				if (isIntersecting) video.play().catch(() => {});
+				else video.pause();
+			}
+		});
+
+		document.querySelectorAll<HTMLVideoElement>('video.project-video').forEach((v) => observer.observe(v));
+	}
+</script>

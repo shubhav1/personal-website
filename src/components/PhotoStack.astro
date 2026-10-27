@@ -1,0 +1,72 @@
+---
+interface Photo {
+	src?: string;
+	alt: string;
+}
+
+interface Props {
+	photos: Photo[];
+}
+
+const { photos } = Astro.props;
+---
+
+<div class="photos">
+	{photos.map((p, i) =>
+		p.src ? (
+			// The first photo is visible on load, so don't lazy-load it.
+			<img src={p.src} alt={p.alt} loading={i === 0 ? 'eager' : 'lazy'} decoding="async" />
+		) : (
+			<div class="placeholder" aria-hidden="true">[photo]</div>
+		)
+	)}
+</div>
+
+<style>
+	/* The first photo (headshot) spans the full width; the rest are squares, two per
+	   row. Narrow screens: this sits below the text. The panel is a size container so
+	   the headshot can size itself against the squares' height (see below). */
+	.photos {
+		--gap: 0.5rem;
+		display: grid;
+		grid-template-columns: 1fr 1fr;
+		gap: var(--gap);
+		container-type: inline-size;
+	}
+
+	.photos > * {
+		width: 100%;
+		aspect-ratio: 1;
+		object-fit: cover;
+		background: var(--rule);
+		border-radius: 4px;
+	}
+
+	.photos > :first-child {
+		grid-column: 1 / -1;
+		object-position: center 50%;
+	}
+
+	.placeholder {
+		display: grid;
+		place-items: center;
+		font-family: var(--secondary);
+		font-size: var(--secondary-size);
+		color: var(--muted);
+	}
+
+	/* Wide screens: the panel fills the window from where the content starts (below
+	   the masthead) down to the same --top gap at the bottom. Two rows of squares
+	   plus the gap between them are exactly the panel's width (100cqw) tall, so the
+	   headshot takes what's left — but never less than 10.5rem on short screens. */
+	@media (min-width: 70rem) {
+		.photos {
+			--gap: 0.6rem;
+		}
+
+		.photos > :first-child {
+			aspect-ratio: auto;
+			height: max(10.5rem, calc(100vh - var(--content-top) - var(--top) - 100cqw - var(--gap)));
+		}
+	}
+</style>
