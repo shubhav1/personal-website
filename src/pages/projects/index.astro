@@ -1,4 +1,5 @@
 ---
+import Icon from '../../components/Icon.astro';
 import ProjectVideo from '../../components/ProjectVideo.astro';
 import Base from '../../layouts/Base.astro';
 import { getProjects } from '../../lib/content';
@@ -20,6 +21,9 @@ const projects = await getProjects();
 								{p.data.inProgress && <span class="status">in progress</span>}
 							</h3>
 							<p>{p.data.description ?? p.data.summary}</p>
+							{p.data.link && (
+								<a class="code" href={p.data.link} target="_blank" rel="noopener noreferrer"><Icon name="github" />GitHub</a>
+							)}
 						</div>
 						<div class="thumb">
 							<ProjectVideo src={p.data.video} poster={p.data.poster} image={p.data.image} label={p.data.title} />
@@ -54,6 +58,14 @@ const projects = await getProjects();
 
 	.entry p {
 		margin: 0;
+	}
+
+	.code {
+		display: inline-block;
+		margin-top: 0.5rem;
+		font-family: var(--secondary);
+		font-size: var(--secondary-size);
+		color: var(--muted);
 	}
 
 	.status {

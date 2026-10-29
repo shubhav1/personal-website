@@ -15,7 +15,7 @@ const been = [
 		role: 'Business Analyst',
 		name: 'McKinsey & Company',
 		url: 'https://www.mckinsey.com/',
-		desc: 'Modeled battery storage feasibility for AI data centers',
+		desc: 'Modeled battery buffering for 100 MW AI data centers',
 	},
 	{
 		dates: '2.26–5.26',
@@ -59,7 +59,14 @@ const photos = [
 
 <Base>
 	<PhotoStack slot="aside" photos={photos} />
-	<h1 class="name">Shubha Vajragiri</h1>
+	<div class="name-row">
+		<h1 class="name">Shubha Vajragiri</h1>
+		<span class="socials">
+			<a href="mailto:shubha.vajragiri@gmail.com" target="_blank" rel="noopener noreferrer" aria-label="Email"><Icon name="mail" /></a>
+			<a href="https://www.linkedin.com/in/shubha-vajragiri/" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn"><Icon name="linkedin" /></a>
+			<a href="https://github.com/shubhav1" target="_blank" rel="noopener noreferrer" aria-label="GitHub"><Icon name="github" /></a>
+		</span>
+	</div>
 
 	<section>
 		<div>
@@ -180,11 +187,35 @@ const photos = [
 		font-variant-numeric: tabular-nums;
 	}
 
+	/* Name with icon-only email, LinkedIn, and GitHub links beside it. */
+	.name-row {
+		display: flex;
+		align-items: center;
+		gap: 0.9rem;
+		margin: 0 0 1.25rem;
+	}
+
 	.name {
 		font-size: 1.55rem;
 		font-weight: 500;
 		line-height: 1.2;
-		margin: 0 0 1.25rem;
+		margin: 0;
+	}
+
+	.socials {
+		display: flex;
+		gap: 0.6rem;
+		font-size: 1.05rem;
+		color: var(--muted);
+	}
+
+	.socials a {
+		display: flex;
+		text-decoration: none;
+	}
+
+	.socials :global(.icon) {
+		margin-right: 0;
 	}
 
 	.thumbs {
