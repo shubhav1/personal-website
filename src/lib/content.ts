@@ -1,12 +1,14 @@
 import { getCollection } from 'astro:content';
 
-// Finished before in-progress, then featured first, then newest first.
+// Finished before in-progress, then featured first, then by `order` (lowest
+// first; unset goes last), then newest first.
 export async function getProjects() {
 	const entries = await getCollection('projects', ({ data }) => !data.draft);
 	return entries.sort(
 		(a, b) =>
 			Number(a.data.inProgress) - Number(b.data.inProgress) ||
 			Number(b.data.featured) - Number(a.data.featured) ||
+			(a.data.order ?? Infinity) - (b.data.order ?? Infinity) ||
 			b.data.year - a.data.year
 	);
 }

@@ -17,6 +17,8 @@ const projects = defineCollection({
 		// Still thumbnail under public/, used when there's no video.
 		image: z.string().optional(),
 		featured: z.boolean().default(false),
+		// Manual sort position (lowest first); projects without one go after.
+		order: z.number().optional(),
 		// Shown with an "in progress" label and listed after finished projects.
 		inProgress: z.boolean().default(false),
 		draft: z.boolean().default(false),
